@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float mouseSensitivity;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Gun gun;
+    [SerializeField] private float interactDistance;
 
     private float xRotation;
 
@@ -28,6 +30,9 @@ public class PlayerController : MonoBehaviour
     {
         LookAround();
         Move();
+        ShootGun();
+        SelectInteractables();
+        InteractWithObject();
     }
 
     private void LookAround()
@@ -52,5 +57,44 @@ public class PlayerController : MonoBehaviour
 
         Vector3 moveDirection = xMove * transform.right + zMove * transform.forward;
         GetComponent<CharacterController>().Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
+    }
+
+    private void SelectInteractables()
+    {
+        if(currentSelection != null)
+        {
+            currentSelection = null;
+            FindObjectOfType<InteractTooltip>().HideInteractText();
+        }
+
+        RaycastHit hit;
+        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(ray, out hit, interactDistance))
+        {
+            if(hit.transform.CompareTag("Selectable"))
+            {
+                currentSelection = hit.transform;
+                FindObjectOfType<InteractTooltip>().ShowInteractText();
+            }
+        }
+    }
+
+    private void InteractWithObject()
+    {
+        if(Input.GetKeyDown(KeyCode.E) && currentSelection != null)
+        {
+            if(currentSelection.GetComponent<IInteractable>() != null)
+            {
+                currentSelection.GetComponent<IInteractable>().Interact();
+            }
+        }
+    }
+
+    private void ShootGun()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            gun.Shoot();
+        }
     }
 }
