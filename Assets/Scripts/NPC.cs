@@ -5,7 +5,7 @@ using UnityEngine;
 public class NPC : MonoBehaviour, IInteractable
 {
     [SerializeField] private DialogueRenderer dialogueRenderer;
-    public Dialogue npcDialogue;
+    public Quest quest;
 
     private PlayerController playerRef;
     private bool talkingToPlayer;
@@ -32,9 +32,10 @@ public class NPC : MonoBehaviour, IInteractable
     public void Interact()
     {
         talkingToPlayer = true;
+        quest.SetQuestActive();
         if (!dialogueRenderer.HasDialogueLoaded())
         {
-            dialogueRenderer.LoadSentences(npcDialogue);
+            dialogueRenderer.LoadSentences(quest.dialogue);
         }
         dialogueRenderer.RenderText();
     }
