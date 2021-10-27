@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour
 
         RaycastHit hit;
         Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+
         if(Physics.Raycast(ray, out hit, interactDistance))
         {
             if(hit.transform.CompareTag("Selectable"))
