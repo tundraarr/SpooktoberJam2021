@@ -29,10 +29,14 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         LookAround();
-        Move();
         ShootGun();
         SelectInteractables();
         InteractWithObject();
+    }
+
+    private void FixedUpdate()
+    {
+        Move();
     }
 
     private void LookAround()
@@ -56,7 +60,9 @@ public class PlayerController : MonoBehaviour
         float zMove = Input.GetAxisRaw("Vertical");
 
         Vector3 moveDirection = xMove * transform.right + zMove * transform.forward;
-        GetComponent<CharacterController>().Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
+        //GetComponent<CharacterController>().Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
+        GetComponent<Rigidbody>().velocity = moveDirection * moveSpeed * Time.deltaTime;
+
     }
 
     private void SelectInteractables()
