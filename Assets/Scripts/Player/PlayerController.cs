@@ -14,29 +14,35 @@ public class PlayerController : MonoBehaviour
 
     private Transform currentSelection;
 
+    public bool canMove = false;
+
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        LookAround();
-        ShootGun();
-        SelectInteractables();
-        InteractWithObject();
+        if (currentSelection == null)
+        {
+            FindObjectOfType<InteractTooltip>().HideInteractText();
+        }
+        if(canMove)
+        {
+            LookAround();
+            ShootGun();
+            SelectInteractables();
+            InteractWithObject();
+        }
     }
 
     private void FixedUpdate()
     {
-        Move();
+        if(canMove)
+        {
+            Move();
+        }
     }
 
     private void LookAround()
@@ -93,15 +99,18 @@ public class PlayerController : MonoBehaviour
             if(currentSelection.GetComponent<IInteractable>() != null)
             {
                 currentSelection.GetComponent<IInteractable>().Interact();
+                currentSelection = null;
+                FindObjectOfType<InteractTooltip>().HideInteractText();
             }
         }
     }
 
     private void ShootGun()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && canMove == true)
         {
             gun.Shoot();
+            FindObjectOfType<InteractTooltip>().HideInteractText();
         }
     }
 }

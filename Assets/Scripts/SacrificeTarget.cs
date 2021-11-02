@@ -4,25 +4,15 @@ using UnityEngine;
 
 public class SacrificeTarget : MonoBehaviour, IShootable
 {
-    public bool isAttackable;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        isAttackable = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool isShootable;
 
     public void GetShot()
     {
-        if(isAttackable)
+        if(isShootable)
         {
-            Debug.Log("Imposter shot!");
+            FindObjectOfType<GameManager>().SacrificeCollected();
+            FindObjectOfType<SoundManager>().PlaySacrifice();
+            Destroy(gameObject);
         }
     }
 }

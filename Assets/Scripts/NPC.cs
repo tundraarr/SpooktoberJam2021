@@ -2,19 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC : MonoBehaviour, IInteractable
+public class NPC : MonoBehaviour, IInteractable, IShootable
 {
-    [SerializeField] private DialogueRenderer dialogueRenderer;
+    [SerializeField] protected DialogueRenderer dialogueRenderer;
     public Quest quest;
 
-    private PlayerController playerRef;
-    private bool talkingToPlayer;
-    [SerializeField] private float dialogueDistance;
+    protected PlayerController playerRef;
+    protected bool talkingToPlayer;
+    [SerializeField]protected bool isKillable;
+    protected bool isDead;
+    [SerializeField] protected float dialogueDistance;
 
     private void Awake()
     {
         playerRef = FindObjectOfType<PlayerController>();
         talkingToPlayer = false;
+        if(quest != null)
+        {
+            quest.AssignQuestReference();
+            quest.SetTasksLeft();
+        }
     }
 
     private void Update()
@@ -29,14 +36,38 @@ public class NPC : MonoBehaviour, IInteractable
         }
     }
 
-    public void Interact()
+    //To be overridden in child classes
+    public virtual void Interact()
     {
         talkingToPlayer = true;
-        quest.SetQuestActive();
+
+        if (!quest.questActive)
+        {
+            quest.SetQuestActive();
+        }
+
         if (!dialogueRenderer.HasDialogueLoaded())
         {
-            dialogueRenderer.LoadSentences(quest.dialogue);
+            dialogueRenderer.LoadSentences(quest.dialogue[0]);
         }
         dialogueRenderer.RenderText();
+    }
+
+    public virtual void GetShot()
+    {
+        if(isKillable)
+        {
+            Die();
+        }
+    }
+
+    public void SetKillable(bool canKill)
+    {
+        isKillable = canKill;
+    }
+
+    private void Die()
+    {
+        Debug.Log("NPC Dead");
     }
 }
